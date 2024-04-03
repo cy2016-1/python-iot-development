@@ -1,11 +1,13 @@
 # Python物联网开发
 
 #### 介绍
-这是使用Python进行物联网开发系列课程的示例代码库
+这是使用Python进行物联网开发系列课程的示例代码库，代码大都是以支持MicroPython的ESP32开发板调试通过，如果没有特别说明，使用的开发板都是ESP32，开发板如下图：![输入图片说明](one_hour_course/C01/esp32-1.png)
 
-#### 软件架构
-软件架构说明
 
+课程在B站：
+1小时入门Python物联网开发：
+[（1）MicroPython开发环境搭建](https://www.bilibili.com/video/BV1sz42197Z9/?share_source=copy_web&vd_source=850c0fa5185ae280f676ee3f51f97d53)
+[（2）连接网络获取数据](https://www.bilibili.com/video/BV13Z421B7mC/?share_source=copy_web&vd_source=850c0fa5185ae280f676ee3f51f97d53)
 
 #### 安装教程
 
