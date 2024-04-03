@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>连接到WiFi热点</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        input[type="radio"], input[type="text"], button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="wifiList"></div>
+        <input type="text" id="input" placeholder="请输入WiFi密码">
+        <button onclick="submit()">提交</button>
+    </div>
+    <script>
+        function fetchList() {
+            fetch("/list")
+                .then(response => response.json())
+                .then(data => {
+                    const wifiList = document.getElementById("wifiList");
+                    for(var i=0; i<data.length; i++){
+                        wifiList.appendChild(document.createElement("tr"));
+                        item = data[i];
+                        const radio = document.createElement("input");
+                        radio.type = "radio";
+                        radio.name = "option";
+                        radio.value = item.ssid;
+                        radio.is_open = item.is_open;
+                        radio.id = "option"+i;
+                        
+                        const label = document.createElement("label");
+                        label.htmlFor = radio.id;
+                        label.appendChild(document.createTextNode(item.ssid));
+                        var row = document.createElement("div");
+                        row.appendChild(radio);
+                        row.appendChild(label);
+                        if(! item.is_open){
+                            var icon = document.createElement("span");
+                            icon.innerHTML = '&#128273';
+                            row.appendChild(icon);
+                        }                        
+                        wifiList.appendChild(row);
+                    }
+                })
+                .catch(error => console.error("获取WiFi热点列表失败：", error));
+        }
+
+        function submit() {
+            const radioButtons = document.getElementsByName("option");
+            let selectedValue = null;
+            let is_open = false;
+            for (let i = 0; i < radioButtons.length; i++) {
+                if (radioButtons[i].checked) {
+                    selectedValue = radioButtons[i].value;
+                    is_open = radioButtons[i].is_open;
+                    break;
+                }
+            }
+            if (selectedValue==null){
+                alert("请选择要连接的WiFi热点！");
+                return;
+            }
+            const inputValue = document.getElementById("input").value;
+            if(!is_open && (inputValue=="" || inputValue==null)){
+                alert("WiFi热点"+selectedValue+"需要输入密码");
+                return;
+            }
+            fetch("/save", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({'ssid': selectedValue, 'pwd': inputValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.get("msg"));
+                console.log("提交成功：", data);
+            })
+            .catch(error => console.error("提交失败：", error));
+        }
+        fetchList();
+    </script>
+</body>
+</html>
+
